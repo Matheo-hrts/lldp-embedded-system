@@ -7,6 +7,11 @@ from network_manager import start
 from storage_manager import save_csv
 
 class LLDPDataScreen(Screen):
+
+    BINDINGS = [
+        ("escape", "app.pop_screen", "Back"),
+    ]
+
     def compose(self) -> ComposeResult:
         yield Header()
         yield Label("Waiting for LLDP data...", id="waiting")

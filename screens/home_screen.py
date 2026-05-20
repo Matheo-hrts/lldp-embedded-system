@@ -1,4 +1,6 @@
 from screens.lldp_data_screen import LLDPDataScreen
+from screens.history_screen import HistoryScreen
+
 from textual.app import ComposeResult
 from textual.screen import Screen
 from textual.widgets import Header, Footer, Button
@@ -14,3 +16,6 @@ class HomeScreen(Screen):
     def on_button_pressed(self, event: Button.Pressed) -> None:
         if event.button.id == "lldp_data":
             self.app.push_screen(LLDPDataScreen())
+
+        if event.button.id == "history":
+            self.app.push_screen(HistoryScreen())

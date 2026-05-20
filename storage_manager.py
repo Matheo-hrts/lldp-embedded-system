@@ -17,3 +17,20 @@ def save_csv(data: dict) -> None:
         if not file_exists:
             writer.writeheader()
         writer.writerow(data)
+
+def load_history() -> list:
+    file_path = "saves/history.csv"
+    if not os.path.exists(file_path):
+        return []
+    with open(file_path, "r") as f:
+        reader = csv.DictReader(f)
+        return list(reader)
+
+def group_by_system(history: list) -> dict:
+    grouped = {}
+    for frame in history:
+        name = frame["system_name"]
+        if name not in grouped:
+            grouped[name] = []
+        grouped[name].append(frame)
+    return grouped
