@@ -1,4 +1,88 @@
-from tui import LLDPApp
+import gpiod
+from luma.core.render import canvas
+from luma.core.interface.serial import spi
+from luma.lcd.device import ili9488
+from screens.home_screen import HomeScreen
+from screens.lldp_screen import LLDPScreen
+import time
+import threading
+
+class GpioWrapper:
+    OUT = 1
+    IN = 0
+    LOW = 0
+    HIGH = 1
+
+    def __init__(self):
+        self.chip = gpiod.Chip("/dev/gpiochip0")
+        self.lines = {}
+
+    def setmode(self, mode):
+        pass
+
+    def setup(self, pin, direction):
+        if pin is None:
+            return
+        line = self.chip.request_lines(
+                consumer="luma",
+                config={pin: gpiod.LineSettings(direction=gpiod.line.Direction.OUTPUT)}
+                )
+        self.lines[pin] = line
+
+    def output(self, pin, value):
+        if pin is None:
+            return
+        self.lines[pin].set_value(pin, gpiod.line.Value.ACTIVE if value else gpiod.line.Value.INACTIVE)
+
+    def cleanup(self):
+        for line in self.lines.values():
+            line.release()
+
+def draw_loop(device, screen_holder):
+    while True:
+        with canvas(device) as draw:
+            screen_holder[0].draw(draw, device.width, device.height)
+        time.sleep(0.5)
+
+def main():
+    gpio = GpioWrapper()
+    serial = spi(port=1, device=1, gpio_DC=79, gpio_RST=78, gpio=gpio)
+    device = ili9488(serial, gpio=gpio, gpio_LIGHT=None)
+
+    home = HomeScreen()
+    lldp = LLDPScreen()
+    screen_holder = [home]
+
+    draw_thread = threading.Thread(target=draw_loop, args=(device, screen_holder), daemon=True)
+    draw_thread.start()
+
+
+    while True:
+        key = input("Button (w=UP, s=DOWN, enter=SELECT, q=quit): ")
+
+        if key == "w":
+            device.clear()
+            screen_holder[0].handle_button("UP")
+        elif key == "s":
+            device.clear()
+            screen_holder[0].handle_button("DOWN")
+        elif key == "b":
+            device.clear()
+            result = screen_holder[0].handle_button("BACK")
+            if result == "BACK":
+                screen_holder[0] = home
+        elif key == "":
+            device.clear()
+            result = screen_holder[0].handle_button("SELECT")
+            if result == "LLDP Data":
+                lldp.start_capture(iface="eth0")
+                screen_holder[0]=lldp
+            elif result == "SAVE":
+                from storage_manager import save_csv
+                save_csv(lldp._current_frame)
+                print("Saved!")
+        elif key == "q":
+            break
 
 if __name__ == "__main__":
-    LLDPApp().run()
+    main()
