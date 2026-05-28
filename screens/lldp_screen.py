@@ -2,6 +2,8 @@ from PIL import ImageFont
 from network_manager import start
 import threading
 
+font = ImageFont.truetype("/usr/share/fonts/truetype/dejavu/DejaVuSans-Bold.ttf", 12)
+
 class LLDPScreen:
     def __init__(self):
         self._current_frame = None
@@ -19,7 +21,7 @@ class LLDPScreen:
         self._timed_out = False
         self._current_frame = info
         self._timeout_timer = threading.Timer(40, self.on_timeout)
-        self._timout_timer.start()
+        self._timeout_timer.start()
 
     def on_timeout(self):
         self._timed_out = True
@@ -27,17 +29,17 @@ class LLDPScreen:
 
     def draw(self, draw, width, height):
         draw.rectangle((0, 0, width, height), fill="black")
-        draw.text((10, 10), "LLDP Data", fill="white")
+        draw.text((10, 10), "LLDP Data", fill="white", font=font)
         draw.line([(0,30), (width, 30)], fill="white")
 
         if self._timed_out:
-            draw.text((10, 50), "No frame received!", fill="red")
+            draw.text((10, 50), "No frame received!", fill="red", font=font)
         elif self._current_frame is None:
-            draw.text((10, 50), "waiting for data...", fill="yellow")
+            draw.text((10, 50), "waiting for data...", fill="yellow", font=font)
         else:
             y=50
             for key, value in self._current_frame.items():
-                draw.text((10, y), f"{key}: {value}", fill="white")
+                draw.text((10, y), f"{key}: {value}", fill="white", font=font)
                 y += 25
 
     def handle_button(self, button):

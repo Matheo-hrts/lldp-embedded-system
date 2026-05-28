@@ -4,8 +4,11 @@ from luma.core.interface.serial import spi
 from luma.lcd.device import ili9488
 from screens.home_screen import HomeScreen
 from screens.lldp_screen import LLDPScreen
+from screens.history_screen import HistoryScreen
 import time
 import threading
+from PIL import Image, ImageDraw
+from input_manager import InputManager
 
 class GpioWrapper:
     OUT = 1
@@ -38,10 +41,19 @@ class GpioWrapper:
         for line in self.lines.values():
             line.release()
 
-def draw_loop(device, screen_holder):
+"""def draw_loop(device, screen_holder):
     while True:
         with canvas(device) as draw:
             screen_holder[0].draw(draw, device.width, device.height)
+        time.sleep(0.5)"""
+
+def draw_loop(device, screen_holder):
+    while True:
+        img = Image.new("RGB", (320, 480), "white")
+        draw = ImageDraw.Draw(img)
+        screen_holder[0].draw(draw, 320, 480)
+        img = img.rotate(90, expand=True)
+        device.display(img)
         time.sleep(0.5)
 
 def main():
@@ -49,8 +61,11 @@ def main():
     serial = spi(port=1, device=1, gpio_DC=79, gpio_RST=78, gpio=gpio)
     device = ili9488(serial, gpio=gpio, gpio_LIGHT=None)
 
+    inputs = InputManager()
+
     home = HomeScreen()
     lldp = LLDPScreen()
+    history = HistoryScreen()
     screen_holder = [home]
 
     draw_thread = threading.Thread(target=draw_loop, args=(device, screen_holder), daemon=True)
@@ -58,7 +73,12 @@ def main():
 
 
     while True:
-        key = input("Button (w=UP, s=DOWN, enter=SELECT, q=quit): ")
+        #key = input("Button (w=UP, s=DOWN, enter=SELECT, q=quit): ")
+        key = inputs.read_button()
+
+        if not key:
+            time.sleep(0.05)
+            continue
 
         if key == "w":
             device.clear()
@@ -81,6 +101,9 @@ def main():
                 from storage_manager import save_csv
                 save_csv(lldp._current_frame)
                 print("Saved!")
+            elif result == "History":
+                history.refresh()
+                screen_holder[0]=history
         elif key == "q":
             break
 
