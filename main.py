@@ -73,25 +73,24 @@ def main():
 
 
     while True:
-        #key = input("Button (w=UP, s=DOWN, enter=SELECT, q=quit): ")
         key = inputs.read_button()
 
         if not key:
             time.sleep(0.05)
             continue
 
-        if key == "w":
+        if key == "UP":
             device.clear()
             screen_holder[0].handle_button("UP")
-        elif key == "s":
+        elif key == "DOWN":
             device.clear()
             screen_holder[0].handle_button("DOWN")
-        elif key == "b":
+        elif key == "BACK":
             device.clear()
             result = screen_holder[0].handle_button("BACK")
             if result == "BACK":
                 screen_holder[0] = home
-        elif key == "":
+        elif key == "SELECT":
             device.clear()
             result = screen_holder[0].handle_button("SELECT")
             if result == "LLDP Data":
