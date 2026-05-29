@@ -41,12 +41,6 @@ class GpioWrapper:
         for line in self.lines.values():
             line.release()
 
-"""def draw_loop(device, screen_holder):
-    while True:
-        with canvas(device) as draw:
-            screen_holder[0].draw(draw, device.width, device.height)
-        time.sleep(0.5)"""
-
 def draw_loop(device, screen_holder):
     while True:
         img = Image.new("RGB", (320, 480), "white")
