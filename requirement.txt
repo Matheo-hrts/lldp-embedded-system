@@ -1,0 +1,9 @@
+scapy
+gpiod
+spidev
+Pillow
+luma.lcd
+OPi.GPIO
+python-dotenv
+pytest
+pytest-cov
