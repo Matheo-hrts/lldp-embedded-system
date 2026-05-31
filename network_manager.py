@@ -5,14 +5,14 @@ from scapy.contrib.lldp import *
 def handle_packet(pkt, callback):
     chassis = pkt[LLDPDUChassisID].id
     port = pkt[LLDPDUPortID].id
-    vlan = pkt[LLDPDUGenericOrganisationSpecific].subtype
+    vlan = pkt[LLDPDUGenericOrganisationSpecific].data
     ttl = pkt[LLDPDUTimeToLive].ttl
     system = pkt[LLDPDUSystemName].system_name
     info = {
             "chassis_id" : chassis if isinstance(chassis, str) else chassis.decode(),
             "port_id" : port if isinstance(port, str) else port.decode(),
             "ttl" : ttl,
-            "vlan" : vlan,
+            "vlan" : int.from_bytes(vlan, "big"),
             "system_name" : system if isinstance(system, str) else system.decode(),
             }
 
