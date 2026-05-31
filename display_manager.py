@@ -7,7 +7,6 @@ from screens.history_screen import HistoryScreen
 import time
 import threading
 from PIL import Image, ImageDraw
-from input_manager import InputManager
 
 
 class GpioWrapper:
@@ -43,11 +42,11 @@ class GpioWrapper:
 
 
 class DisplayManager:
-    def __init__(self):
+    def __init__(self, inputs):
         self.gpio = GpioWrapper()
         serial = spi(port=1, device=1, gpio_DC=79, gpio_RST=78, gpio=self.gpio)
         self.device = ili9488(serial, gpio=self.gpio, gpio_LIGHT=None)
-        self.inputs = InputManager()
+        self.inputs = inputs
 
         self.home = HomeScreen()
         self.lldp = LLDPScreen()

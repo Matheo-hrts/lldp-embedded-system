@@ -1,8 +1,10 @@
 from display_manager import DisplayManager
+from input_manager import InputManager
 
 
 def main():
-    manager = DisplayManager()
+    inputs = InputManager()
+    manager = DisplayManager(inputs)
     manager.run()
 
 
