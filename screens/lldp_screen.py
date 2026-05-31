@@ -42,6 +42,9 @@ class LLDPScreen:
                 draw.text((10, y), f"{key}: {value}", fill="white", font=font)
                 y += 25
 
+            draw.rectangle((5, width-130, width-5, width-100), fill="white")
+            draw.text((10, width-120), "SELECT: Save to CSV", fill="black", font=font)
+
     def handle_button(self, button):
         if button == "BACK":
             if self._timeout_timer:

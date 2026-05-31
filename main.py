@@ -93,7 +93,7 @@ def main():
             elif result == "SAVE":
                 from storage_manager import save_csv
                 save_csv(lldp._current_frame)
-                print("Saved!")
+                screen_holder[0]=home
             elif result == "History":
                 history.refresh()
                 screen_holder[0]=history
