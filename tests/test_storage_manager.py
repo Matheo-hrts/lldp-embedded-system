@@ -8,6 +8,7 @@ from storage_manager import save_csv, load_history, group_by_system
 SAMPLE_FRAME = {
     "chassis_id": "00:8e:73:d4:31:d0",
     "port_id": "gi1/1/48",
+    "vlan": "1",
     "ttl": "120",
     "system_name": "CiscoLLDP"
 }
@@ -87,7 +88,7 @@ class TestGroupBySystem:
         history = [
             {**SAMPLE_FRAME, "timestamp": "2026-01-01"},
             {**SAMPLE_FRAME, "timestamp": "2026-01-02"},
-            {"chassis_id": "aa:bb:cc", "port_id": "gi1/1/1", "ttl": "120", "system_name": "OtherSwitch", "timestamp": "2026-01-01"}
+            {"chassis_id": "aa:bb:cc", "port_id": "gi1/1/1", "vlan": "1", "ttl": "120", "system_name": "OtherSwitch", "timestamp": "2026-01-01"}
         ]
         result = group_by_system(history)
         assert "CiscoLLDP" in result
