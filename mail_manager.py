@@ -13,6 +13,11 @@ SMTP_PORT = int(os.getenv("SMTP_PORT"))
 FROM_EMAIL = os.getenv("FROM_EMAIL")
 TO_EMAIL = os.getenv("TO_EMAIL")
 
+SMTP_PASSWORD = os.getenv("SMTP_PASSWORD")
+
+if not SMTP_PASSWORD:
+    raise ValueError("Missing SMTP_PASSWORD in .env")
+
 
 if not FROM_EMAIL or not TO_EMAIL:
     raise ValueError("Missing FROM_EMAIL or TO_EMAIL in .env")
@@ -69,5 +74,9 @@ def send_frame(frame: dict):
 
     with smtplib.SMTP(SMTP_SERVER, SMTP_PORT, timeout=10) as server:
         server.ehlo()
+        server.starttls()
+        server.ehlo()
+        server.login(FROM_EMAIL, SMTP_PASSWORD)
+
         server.send_message(msg)
 
