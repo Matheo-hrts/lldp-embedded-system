@@ -34,9 +34,10 @@ class MailListScreen:
                 draw.text((10,y), address, fill="black", font=font)
             else: 
                 draw.text((10,y), address, fill="white", font=font)
-            y += 25
+            y += 20
 
-        draw.text((10, height -25), "SELECT: choose BACK: cancel", fill="white", font=font)
+        draw.rectangle((5, width-130, width-5, width-100), fill="white")
+        draw.text((10, width-120), "SELECT: choose BACK: cancel", fill="black", font=font)
     def handle_button(self, button):
         if not self.recipients:
             return "BACK" if button == "BACK" else None
