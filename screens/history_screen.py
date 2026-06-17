@@ -13,6 +13,7 @@ class HistoryScreen:
         self._systems = list(self._grouped_data.keys())
         self._selected_system_index = 0
         self._selected_frame_index = 0
+        self._frame_to_send = None
 
     @property
     def current_system(self):
@@ -78,6 +79,9 @@ class HistoryScreen:
         self._selected_system_index = 0
         self._selected_frame_index = 0
         self._state = "systems"
+
+    def send_to(self, address):
+        send_frame(self._frame_to_send, address)
     
     def handle_button(self, button):
         if self._state == "systems":
@@ -122,8 +126,8 @@ class HistoryScreen:
         elif self._state == "details":
 
             if button == "SELECT":
-                frame = self.current_frames[self._selected_frame_index]
-                send_frame(frame)
+                self._frame_to_send = self.current_frames[self._selected_frame_index]
+                return "EMAIL_LIST"
 
             if button == "BACK":
                 self._state = "dates"

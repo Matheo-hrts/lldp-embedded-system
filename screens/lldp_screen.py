@@ -47,6 +47,8 @@ class LLDPScreen:
 
     def handle_button(self, button):
         if button == "BACK":
+            if self._current_frame:
+                self._current_frame = None
             if self._timeout_timer:
                 self._timeout_timer.cancel()
             return "BACK"

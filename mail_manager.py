@@ -19,8 +19,8 @@ if not SMTP_PASSWORD:
     raise ValueError("Missing SMTP_PASSWORD in .env")
 
 
-if not FROM_EMAIL or not TO_EMAIL:
-    raise ValueError("Missing FROM_EMAIL or TO_EMAIL in .env")
+if not FROM_EMAIL:
+    raise ValueError("Missing FROM_EMAIL in .env")
 
 def build_html(frame: dict) -> str:
     rows = ""
@@ -59,7 +59,16 @@ def build_html(frame: dict) -> str:
 
     return html
 
-def send_frame(frame: dict):
+def get_recipients() -> list:
+    raw = TO_EMAIL.strip()
+    if raw.startswith("[") and raw.endswith("]"):
+        raw = raw[1:-1]
+    return [addr.strip().strip('"\'') for addr in raw.split(",") if addr.strip()]
+
+def send_frame(frame: dict, to_email: str):
+    if to_email is None:
+        to_email = ", ".join(get_recipients())
+
     subject = f"LLDP Frame - {frame.get('system_name', 'Unknown')}"
 
     html = build_html(frame)
@@ -67,7 +76,7 @@ def send_frame(frame: dict):
     msg = MIMEMultipart("alternative")
 
     msg["From"] = FROM_EMAIL
-    msg["To"] = TO_EMAIL
+    msg["To"] = to_email
     msg["Subject"] = subject
 
     msg.attach(MIMEText(html, "html"))

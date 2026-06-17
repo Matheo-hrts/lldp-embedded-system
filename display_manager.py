@@ -4,6 +4,8 @@ from luma.lcd.device import ili9488
 from screens.home_screen import HomeScreen
 from screens.lldp_screen import LLDPScreen
 from screens.history_screen import HistoryScreen
+from screens.error_screen import ErrorScreen
+from screens.mail_list_screen import MailListScreen
 import time
 import threading
 from PIL import Image, ImageDraw
@@ -51,6 +53,8 @@ class DisplayManager:
         self.home = HomeScreen()
         self.lldp = LLDPScreen()
         self.history = HistoryScreen()
+        self.error = ErrorScreen()
+        self.mail_list = MailListScreen()
         self.screen_holder = [self.home]
 
     def _draw_loop(self):
@@ -99,6 +103,15 @@ class DisplayManager:
                 elif result == "History":
                     self.history.refresh()
                     self.screen_holder[0] = self.history
+                elif result == "EMAIL_LIST":
+                    self.mail_list.refresh()
+                    self.screen_holder[0] = self.mail_list
+                elif result == "SEND_EMAIL":
+                    address = self.mail_list.selected_mail
+                    try:
+                        self.history.send_to(address)
+                        self.screen_holder[0] = self.history
+                    except Exception as e:
+                        self.error.set_error(str(e))
+                        self.screen_holder[0] = self.error
 
-            elif key == "q":
-                break
